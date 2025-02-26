@@ -1,0 +1,48 @@
+# Case - Funcionamento
+- verifica regra, se da certo permite
+- Ferramenta de Analise de Fraude bancaria q faz a verificação por workflow, q é um fluxo q verifica por varias etapas se e ou não fraudulento, junção das regras
+
+**portal:** parte gráfica pro cliente
+
+### 3 versões do case
+1. case (mais atualizada)
+2. portal
+3. case ex (bradesco)
+
+### Ferrametas
+- backend eh com c#\
+- frontend recente é em react, o das antiga é framework em c#
+- Back - postaman, Swagger
+- banco dados - Postgree, Sql
+
+### Workflow Serviços
+- **Adquirencia:** maquininha q aceita cartão, processar maquininha
+- **Cadastral Consolidado:** Cadastro de informações
+- **Card:** cartão
+- **Onboarding:** informações anteriores do usuário (vision4face, 4docs etc)
+- **CAR:** customizar serviço de transação e valida ou não
+- **Retail Bank:** Pix e boleto 
+- **Token:** gerar token
+
+**Contadores:**
+- registro q o cliente queira registrar
+- código de operação,
+- valores etc
+
+**Listas:** 
+- configurar padrão
+- tipo pro cartão credito debito e tals
+
+**Integração:**\
+jogar pro serviço de mensageria pra jogar pra whatapp, sms, email, etc
+
+**LM:**\
+saber se foi ou não fraudulento, analise mais manual pra pessoa verificar se foi ou não uma fraude\
+é dps q já teve a transição, ai se for fraude cancela cartão ou sla
+
+pular aulas q sejam DOCKER dotnet q não é o 5 ou 3. (N ver do 8 e tals)
+
+ver biblioteca Material UI pra baixar e copiar componentes prontos - https://mui.com/?srsltid=AfmBOoq2KY9eRs0LnOcZLsgFnDGoEdZWVduVNfMbr4vIj0IThQXElVgq
+
+Transações no cartão de crédito: https://www.youtube.com/watch?v=2WUZjZbaYxs 
+Passo a passo de uma transação de cartão de crédito: https://www.youtube.com/watch?v=q6BN5JNIJdc

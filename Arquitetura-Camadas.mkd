@@ -1,0 +1,283 @@
+# Arquitetura Camadas e Responsabilidades
+significa que o código está bem separado por responsabilidades. Isso facilita a manutenção, testes e organização do código.
+
+## Tópicos
+- **[Modelos](#model-modelos)**
+- **[Context](#context-banco-de-dados)**
+- **[Repository](#repository-acesso-ao-banco-de-dados)**
+- **[Business](#business-regra-de-negócio)**
+- **[Diferença Business X Repository](#diferença-business-x-repository)**
+- **[Controller](#controller-api)**
+- **[Resumo](#resumo-geral)**
+
+
+## Model (Modelos)
+📂 Model/Books.cs \
+**O que faz?**
+
+- Representa a estrutura da entidade no banco de dados.
+- Contém os atributos da entidade.
+- Serve como "molde" para os dados que serão manipulados.
+- Mapeamento da tabela\
+ex:
+```
+public class Books
+{
+    public long Id { get; set; }
+    public string Title { get; set; }
+    public string Author { get; set; }
+    public decimal Price { get; set; }
+}
+```
+
+
+## Context (Banco de Dados)
+📂 Model/Context/SqLiteContext.cs\
+**O que faz?**
+
+- Representa a conexão com o banco de dados.
+- Define quais entidades serão tabelas no banco.
+- Usa Entity Framework (EF Core) para mapear objetos no banco de dados.\
+ex:
+
+```
+using Microsoft.EntityFrameworkCore;
+using webRestAPI.Model;
+
+public class SqLiteContext : DbContext
+{
+    public SqLiteContext(DbContextOptions<SqLiteContext> options) : base(options) { }
+
+    public DbSet<Books> Books { get; set; } // Tabela "Books"
+}
+```
+
+
+## Repository (Acesso ao Banco de Dados)
+📂 Repository/IBooksRepository.cs\
+📂 Repository/Implementation/BooksRepositoryImplementation.cs\
+**O que faz?**
+
+- Contém as operações CRUD (Create, Read, Update, Delete) no banco.
+- O Repository isola a lógica de acesso aos dados da aplicação.
+- O Interface (IBooksRepository) define os métodos que o repositório deve ter.
+- O Implementation faz a logica de implementação da ação\
+ex interface:
+```
+using System.Collections.Generic;
+using webRestAPI.Model;
+
+public interface IBooksRepository
+{
+    Books Create(Books books);
+    Books FindById(long id);
+    List<Books> FindAll();
+    Books Update(Books books);
+    void Delete(long id);
+}
+```
+
+ex implementação:
+```
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using webRestAPI.Model;
+using webRestAPI.Model.Context;
+
+public class BooksRepositoryImplementation : IBooksRepository
+{
+    private readonly SqLiteContext _context;
+
+    public BooksRepositoryImplementation(SqLiteContext context)
+    {
+        _context = context;
+    }
+
+    public Books Create(Books books)
+    {
+        _context.Add(books);
+        _context.SaveChanges();
+        return books;
+    }
+
+    public Books FindById(long id)
+    {
+        return _context.Books.SingleOrDefault(b => b.Id == id);
+    }
+
+    public List<Books> FindAll()
+    {
+        return _context.Books.ToList();
+    }
+
+    public Books Update(Books books)
+    {
+        var result = _context.Books.SingleOrDefault(b => b.Id == books.Id);
+        if (result == null) return null;
+
+        _context.Entry(result).CurrentValues.SetValues(books);
+        _context.SaveChanges();
+        return books;
+    }
+
+    public void Delete(long id)
+    {
+        var book = _context.Books.SingleOrDefault(b => b.Id == id);
+        if (book != null)
+        {
+            _context.Books.Remove(book);
+            _context.SaveChanges();
+        }
+    }
+}
+```
+
+**No geral:**
+
+- O repositório acessa diretamente o banco e executa as operações.
+- Evita duplicação de código, pois a lógica do banco está centralizada.
+
+## Business (Regra de Negócio)
+📂 Business/IBooksBusiness.cs\
+📂 Business/Implementation/BooksBusinessImplementation.cs\
+**O que faz?**
+
+- Define a lógica da aplicação (regras de negócio).
+- Recebe os dados do repositório e aplica validações.
+- Separa a parte lógica da parte de acesso ao banco.\
+ex interface:
+```
+using System.Collections.Generic;
+using webRestAPI.Model;
+
+public interface IBooksBusiness
+{
+    Books Create(Books books);
+    Books FindById(long id);
+    List<Books> FindAll();
+    Books Update(Books books);
+    void Delete(long id);
+}
+```
+
+ex implementação:
+```
+using System.Collections.Generic;
+using webRestAPI.Model;
+using webRestAPI.Repository;
+
+public class BooksBusinessImplementation : IBooksBusiness
+{
+    private readonly IBooksRepository _repository;
+
+    public BooksBusinessImplementation(IBooksRepository repository)
+    {
+        _repository = repository;
+    }
+
+    public List<Books> FindAll()
+    {
+        return _repository.FindAll();
+    }
+
+    public Books FindById(long id)
+    {
+        return _repository.FindById(id);
+    }
+
+    public Books Create(Books books)
+    {
+        return _repository.Create(books);
+    }
+
+    public Books Update(Books books)
+    {
+        return _repository.Update(books);
+    }
+
+    public void Delete(long id)
+    {
+        _repository.Delete(id);
+    }
+}
+```
+
+**No geral:**
+
+- O Business faz a "ponte" entre a API e o banco.
+- Aqui poderiam ser adicionadas validações (ex: impedir preço negativo).
+
+- O Repository só faz operações no banco (sem pensar nas regras do negócio).
+- O Business cuida da lógica antes de chamar o Repository.
+- 💡 Se precisar só buscar, salvar ou deletar algo, usa Repository.
+- 💡 Se precisar validar, processar ou transformar dados antes de salvar, usa Business.
+
+## Diferença Business X Repository
+### **Exemplo Comparativo**
+Vamos supor que você tem uma API de livros e quer proibir a criação de livros sem título.
+
+**❌ Errado:**\
+Faz tudo no Repository
+```
+public Books Create(Books books)
+{
+    _context.Add(books);   // Insere sem verificar nada
+    _context.SaveChanges();
+    return books;
+}
+```
+**🔴 Problema:** Ele pode salvar um livro sem título ou com preço negativo, o que pode gerar dados errados.
+
+**✅ Certo:** Regra de negócio no Business, banco no Repository
+```
+// Business - Aplica regra antes de salvar
+public Books Create(Books books)
+{
+    if (string.IsNullOrEmpty(books.Title)) 
+    {
+        throw new Exception("O título do livro não pode ser vazio!");
+    }
+    
+    return _repository.Create(books);  // Chama o Repository
+}
+```
+```
+// Repository - Só salva os dados no banco
+public Books Create(Books books)
+{
+    _context.Add(books);
+    _context.SaveChanges();
+    return books;
+}
+```
+**✅ Agora está certo!** O Business impede que um livro inválido seja salvo no banco.
+
+**basicamente ai o controller ve a requisição, passa pro business q aplica as regras e se tiverem certas chama o repostiory pra de fato executar no banco a ação solicitada!**
+
+REQUISIÇÃO -> CONTROLLER -> BUSINESS -> REPOSITORY -> BANCO DE DADOS
+                         <-          <-           <-
+                   RESPOSTA PARA O CLIENTE
+
+
+
+## Controller (API)
+📂 Controllers/BooksController.cs\
+**O que faz?**
+
+- Define as rotas da API (endpoints).
+- Recebe requisições HTTP (GET, POST, PUT, DELETE).
+- Chama o Business para processar a lógica.
+
+**o geral:**
+
+O Controller é responsável por expor a API para o usuário.
+Recebe requisições HTTP e chama a camada de negócio.
+
+
+## Resumo Geral
+- **Model:** Define a estrutura dos dados (entidade Books).
+- **Context:** Gerencia a conexão com o banco de dados.
+- **Repository:** Manipula diretamente o banco (CRUD).
+- **Business:** Aplica regras de negócio antes de chamar o repository.
+- **Controller:** Expõe a API e recebe requisições HTTP.

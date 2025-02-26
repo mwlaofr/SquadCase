@@ -1,0 +1,88 @@
+
+
+## Fundamentos Teóricos do REST
+- **Webservice:** É uma aplicação interoperada que é hospedada e pode ser acesada por HTTP
+
+- **W3C:** Aplicações cliente servidor que se comunicam pelo WWW através do HTTP possibilitanto interoperabilidade entre softwares
+
+### Diferença entre SOAP e REST
+
+- **Soap**: Usa o protocolo HTTP para fazer chamadas RPC trafegando XML
+- **REST**: Faz requisições usando o protocolo HTTP e suporta diferentes formatos de arquivo
+
+### Request e Response
+Comunicação entre pessoa e servidor intermediada por navegador
+- **Request**:solicita via HTTP ao servidor
+- **Response**: servidor devolve a pagina para o client
+
+com o REST aplicações client que fazem as requisições
+
+### Tipos de Parâmetros
+- **Path parameter:** obrigatório   
+- **Query parameter:** opcional
+ex: https://teste/api?Parametro=Tipo  
+- **Header:** cabeçalho, precisa de uma aplicação para enviar  
+- **Body:** enviar dados complexos, post/put;
+
+### Status Codes
+- **Informacionais:** 100 a 102
+- **Sucesso:** 200 a 226
+- **Redirecionamento:** 300 a 308
+- **Erro de Client:** 400 a 499
+- **Erro de Servwer:** 500 a 599
+
+### Verbos
+- **POST**: Criar um novo recurso, inserir novo registro
+- **GET**: Buscar ou ler dados de um recurso - retorna uma representação XML ou JSON e um HTTP status code 200 se der certo 
+- **PUT**: Atualizar recurso (ou o comando PATCH)
+- **DELETE**: Remover recurso
+
+### Verbos menos conhecidos
+- **PATCH**: Realizar updates parciais de um recurso. Alterar apenas um campo em um recurso **Desvantagens:** Pode causar colisões entre PUT requests
+- **HEAD:** Retorna apenas response line de header
+- **TRACE:** Usado para recuperar  o conteúdo de uma requisição HTTP de volta, pode ser usado como debug
+- **OPTIONS:** Encontrar operações HTTP e outras opções suportadas pelo servidor
+- **CONNECT:** Usado pelo client para estabelecer uma conexão de rede com um servidor via HTTP
+
+### Níveis de Maturidade
+**RESTfull** - estado mais alto, precisa atender a 4 níveis de maturidade
+
+- level 0: gravar clientes, peças, pedidos, ordens de serviço. Um endpoint geral pra tudo
+- level 1: informações organizadas por recurso, endpoint pra cada coisa, mas sem verbos adequados para as situações
+- level 2: verbos como GET, POST, DELETE passam a ser usados e as informações são separadas por recursos ainda
+- level 3: Hypermedia, API fazendo encapsulamento de links/informações
+
+### HATEOAS (Hipermidia como o motor do estado da aplicação)
+Uma API q implementa HATEOAS fornece junto com suas respostas informações que ajudam os clientes/consumidores a navegar de forma dinamica entre os end-point. Inclui links direto na respostas mostrando ao cliente os próximos possíveis passsos apos acessar um recursos\
+Ou seja, não retorna apenas as respostas mas também os links pras próximas ações como atualizar, deletar ou acessar recursos relacionados
+
+### Swagger
+Interface amigavel e detalhada para que desenvolvedores que consomem essas apis possam saber quais parâmetros elas recebem e o retorno esperado. Documentar.
+
+**Aplicações**
+- Documentação automatica de APIs
+- Facilitar o desenvolvimento
+- Integração com outras ferramentas
+- Padrões e conformidade
+
+### Autenticação
+1. Client faz requisição de autenticação pra API com as credenciais. É enviada no body da requisição usando POST.
+2. API recebe as informações e valida no servidor. Se forem validas a API gera um token JWT e retorna resposta 200 e inclui token no body
+3. Client armazena o token q sera usado em todas as requisições subsequentes
+4. Inclui esse token no header HTTP das requisições para acessar partes que precisam de autorização no parametro authorization
+5. Quando recebe valida o token, se der da 200\
+O token tem data de validade, quando expira não é mais aceito pela API
+
+### Versionamento
+Capacidade de adicionar, modificar e até remover funcionalidades sem quebrar os sistemas que dependem dela
+
+- Versionamento por URL
+por sub dominio
+por Path
+por query string
+- Versionamento via header
+
+### Além do RESTfull
+- limite de requisições e acessos
+- sdks para facilitar
+

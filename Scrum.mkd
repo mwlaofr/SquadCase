@@ -1,0 +1,27 @@
+## Conceitos Básicos Scrum
+
+Metodologia de desenvolvimento para trabalho em grupo. Trabalha com ciclos chamados **Sprints**.
+
+A cada Sprint é desenvolvido e entregue algo novo do produto
+
+### Papéis no Scrum
+
+1. **Scrum Master**
+Facilita o processo do Scrum e remove impedimentos para o time
+
+2. **Product Owner (PO)**
+Define e prioriza o que deve ser feito, representando os interesses do cliente
+
+3. **Time de Desenvolvimento**
+Equipe que executa o trabalho e entrega os incrementos do produto
+
+### 🔄 Eventos do Scrum
+- **Sprint** – Ciclo de desenvolvimento com duração fixa.
+- **Sprint Planning** – Planejamento do que será feito na Sprint.
+- **Daily Scrum (Daily Stand-up)** – Reunião diária rápida para alinhamento.
+- **Sprint Review** – Apresentação do que foi entregue na Sprint.
+- **Sprint Retrospective** – Reflexão sobre o que pode ser melhorado no próximo ciclo.
+
+### 🗂 Termos Scrum
+- **Product Backlog** - Lista priorizada de tudo que precisa ser feito no projeto
+- **Sprint Backlog** - Lista do que será desenvolvido na sprint atual
